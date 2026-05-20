@@ -2,10 +2,6 @@ export interface Note {
   id: string;
   title: string;
   content: string;
-  tags: NoteTag[];
+  tag: string;
 }
 
-export interface NoteTag {
-  id: string;
-  name: string;
-}

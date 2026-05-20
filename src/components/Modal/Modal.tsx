@@ -1,13 +1,16 @@
-import NoteForm from "../NoteForm/NoteForm";
 import css from "./Modal.module.css";
+import type { ReactNode } from "react";
+import { createPortal } from "react-dom";
 
-const Modal = () => {
-  return (
+interface ModalProps {
+  children: ReactNode
+}
+
+const Modal = ({ children}: ModalProps) => {
+  return createPortal(
     <div className={css.backdrop} role="dialog" aria-modal="true">
-      <div className={css.modal}>
-        <NoteForm />
-      </div>
-    </div>
+      <div className={css.modal}>{children}</div>
+    </div>, document.body
   );
 };
 
