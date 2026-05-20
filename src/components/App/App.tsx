@@ -15,30 +15,35 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isCreateNote, setIsCreateNote] = useState(false);
-  
+  // const [isCreateNote, setIsCreateNote] = useState(false);
+
   const debouncedSetSearchQuery = useDebouncedCallback(setSearchQuery, 300);
 
   const { data, isLoading, isError } = useQuery<FetchNotesResponse>({
     queryKey: ["note", searchQuery, currentPage],
     queryFn: () => fetchNotes(searchQuery, currentPage),
-    enabled: !!searchQuery,
+    enabled: true,
     placeholderData: keepPreviousData,
   });
 
+  const notes = data?.notes ?? [];
   const totalPages = data?.totalPages ?? 0;
+  const note = {
+    id: "",
+    title: "",
+    content: "",
+    tag: "",
+  };
 
   const handleCreateNote = () => {
     setIsModalOpen(true);
-    setIsCreateNote(true);
+    // setIsCreateNote(true);
   };
 
   const closeModal = () => {
-    setIsCreateNote(false);
+    // setIsCreateNote(false);
     setIsModalOpen(false);
   };
-
-  const notes = data?.notes ?? [];
 
   return (
     <div className={css.app}>
@@ -56,7 +61,12 @@ function App() {
         </button>
       </header>
       {isModalOpen && (
-        <Modal>{isCreateNote && <NoteForm closeModal={closeModal} note={isCreateNote ? { id: "", title: "", content: "", tag: "" } : null} />}</Modal>
+        <Modal>
+          <NoteForm
+            onClose={closeModal}
+            note={note}
+          />
+        </Modal>
       )}
       {notes.length > 0 && <NoteList notes={notes} />}
     </div>

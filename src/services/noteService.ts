@@ -34,8 +34,14 @@ export const fetchNotes = async (
   }
 };
 
-export const createNote = async (note: Note) => {
-  const response = await axios.post(`${API_BASE_URL}/notes`, note, {
+interface CreateNoteData {
+  title: string;
+  content: string;
+  tag: string;
+}
+
+export const createNote = async (noteData: CreateNoteData): Promise<Note> => {
+  const response = await axios.post(`${API_BASE_URL}/notes`, noteData, {
     headers: {
       Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
     },
