@@ -34,7 +34,7 @@ export const fetchNotes = async (
   }
 };
 
-interface CreateNoteData {
+export interface CreateNoteData {
   title: string;
   content: string;
   tag: string;

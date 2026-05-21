@@ -8,7 +8,7 @@ import NoteList from "../NoteList/NoteList";
 import SearchBox from "../SearchBox/SearchBox";
 import Pagination from "../Pagination/Pagination";
 import Modal from "../Modal/Modal";
-// import type { Note } from "../../types/note";
+import type { CreateNoteData } from "../../services/noteService";
 import NoteForm from "../NoteForm/NoteForm";
 
 function App() {
@@ -19,7 +19,7 @@ function App() {
 
   const debouncedSetSearchQuery = useDebouncedCallback(setSearchQuery, 300);
 
-  const { data, isLoading, isError } = useQuery<FetchNotesResponse>({
+  const { data} = useQuery<FetchNotesResponse>({
     queryKey: ["note", searchQuery, currentPage],
     queryFn: () => fetchNotes(searchQuery, currentPage),
     enabled: true,
@@ -28,8 +28,7 @@ function App() {
 
   const notes = data?.notes ?? [];
   const totalPages = data?.totalPages ?? 0;
-  const note = {
-    id: "",
+  const note: CreateNoteData = {
     title: "",
     content: "",
     tag: "",

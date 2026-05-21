@@ -1,41 +1,52 @@
-import css from './NoteForm.module.css'
-import type { Note } from "../../types/note";
-import { Formik, Form, Field, ErrorMessage, type FormikHelpers } from "formik";
+import css from "./NoteForm.module.css";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import { useId } from "react";
 import * as Yup from "yup";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createNote } from "../../services/noteService";
+import type { CreateNoteData } from "../../services/noteService";
 
 interface NoteFormProps {
   onClose: () => void;
-  note: Note;
+  note: CreateNoteData;
 }
 
 const NoteForm = ({ onClose, note }: NoteFormProps) => {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: createNote,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["note"],
+      });
+      onClose();
+    },
+    onError: (error) => {
+      console.error("Error creating note:", error);
+    },
+  });
+
   const id = useId();
 
   const NoteFormSchema = Yup.object().shape({
-  title: Yup.string()
-    .min(2, "Title must be at least 2 characters")
-    .max(100, "Title is too long")
-    .required("Title is required"),
-  content: Yup.string()
-    .min(10, "Content must be at least 10 characters")
-    .max(500, "Content is too long")
-    .required("Content is required"),
-});
+    title: Yup.string()
+      .min(2, "Title must be at least 2 characters")
+      .max(100, "Title is too long")
+      .required("Title is required"),
+    content: Yup.string()
+      .min(10, "Content must be at least 10 characters")
+      .max(500, "Content is too long")
+      .required("Content is required"),
+  });
 
-  const initialValues: Note = {
-    id: note.id,
+  const initialValues: CreateNoteData = {
     title: note.title,
     content: note.content,
-    tag: note.tag || "Todo",
+    tag: note.tag ?? "Todo",
   };
 
-  const handleSubmit = (
-    values: Note,
-    actions: FormikHelpers<Note>
-  ) => {
-    console.log("Note data:", values);
-    actions.resetForm();
+  const handleSubmit = (values: CreateNoteData) => {
+    mutation.mutate(values);
   };
 
   return (
@@ -47,7 +58,12 @@ const NoteForm = ({ onClose, note }: NoteFormProps) => {
       <Form className={css.form}>
         <div className={css.formGroup}>
           <label htmlFor={`${id}-title`}>Title</label>
-          <Field id={`${id}-title`} type="text" name="title" className={css.input} />
+          <Field
+            id={`${id}-title`}
+            type="text"
+            name="title"
+            className={css.input}
+          />
           <ErrorMessage name="title" component="span" className={css.error} />
         </div>
 
@@ -79,7 +95,11 @@ const NoteForm = ({ onClose, note }: NoteFormProps) => {
           <button type="button" className={css.cancelButton} onClick={onClose}>
             Cancel
           </button>
-          <button type="submit" className={css.submitButton} onClick={onClose}>
+          <button
+            type="submit"
+            className={css.submitButton}
+            disabled={mutation.isPending}
+          >
             Create note
           </button>
         </div>
