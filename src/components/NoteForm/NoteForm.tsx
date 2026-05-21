@@ -34,9 +34,8 @@ const NoteForm = ({ onClose, note }: NoteFormProps) => {
       .max(50, "Title is too long")
       .required("Title is required"),
     content: Yup.string()
-      .min(10, "Content must be at least 10 characters")
       .max(500, "Content is too long")
-      .required("Content is required"),
+      .notRequired(),
     tag: Yup.string()
       .oneOf(["Todo", "Work", "Personal", "Meeting", "Shopping"], "Invalid tag")
       .required("Tag is required"),

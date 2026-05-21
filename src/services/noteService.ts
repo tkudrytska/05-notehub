@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Note } from "../types/note";
+import type { Note, NoteTag } from "../types/note";
 
 const API_BASE_URL = "https://notehub-public.goit.study/api";
 
@@ -13,17 +13,19 @@ export const fetchNotes = async (
   page: number,
 ): Promise<FetchNotesResponse> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/notes`, {
-      params: {
-        search,
-        page,
-        perPage: 10,
+    const response = await axios.get<FetchNotesResponse>(
+      `${API_BASE_URL}/notes`,
+      {
+        params: {
+          search,
+          page,
+          perPage: 10,
+        },
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
+        },
       },
-      headers: {
-        Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
-      },
-    });
-
+    );
     return response.data;
   } catch (error) {
     console.error(error);
@@ -36,12 +38,12 @@ export const fetchNotes = async (
 
 export interface CreateNoteData {
   title: string;
-  content: string;
-  tag: string;
+  content?: string;
+  tag: NoteTag;
 }
 
 export const createNote = async (noteData: CreateNoteData): Promise<Note> => {
-  const response = await axios.post(`${API_BASE_URL}/notes`, noteData, {
+  const response = await axios.post<Note>(`${API_BASE_URL}/notes`, noteData, {
     headers: {
       Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
     },
@@ -49,8 +51,8 @@ export const createNote = async (noteData: CreateNoteData): Promise<Note> => {
   return response.data;
 };
 
-export const deleteNote = async (id: string) => {
-  const response = await axios.delete(`${API_BASE_URL}/notes/${id}`, {
+export const deleteNote = async (id: string): Promise<Note> => {
+  const response = await axios.delete<Note>(`${API_BASE_URL}/notes/${id}`, {
     headers: {
       Authorization: `Bearer ${import.meta.env.VITE_NOTEHUB_TOKEN}`,
     },

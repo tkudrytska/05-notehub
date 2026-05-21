@@ -30,7 +30,7 @@ function App() {
   const note: CreateNoteData = {
     title: "",
     content: "",
-    tag: "",
+    tag: "Todo",
   };
 
   const handleCreateNote = () => {
@@ -44,7 +44,7 @@ function App() {
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox text={searchQuery} onSearch={debouncedSetSearchQuery} />
+        <SearchBox text={searchQuery} onSearch={debouncedSetSearchQuery} changePage={setCurrentPage} />
         {totalPages > 1 && (
           <Pagination
             currentPage={currentPage}
