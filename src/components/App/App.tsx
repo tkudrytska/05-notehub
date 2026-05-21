@@ -16,7 +16,13 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const debouncedSetSearchQuery = useDebouncedCallback(setSearchQuery, 300);
+  const debouncedHandleSearch = useDebouncedCallback(
+  (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  },
+  300
+);
 
   const { data, isLoading, isError, error } = useQuery<FetchNotesResponse>({
     queryKey: ["note", searchQuery, currentPage],
@@ -44,7 +50,7 @@ function App() {
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
-        <SearchBox text={searchQuery} onSearch={debouncedSetSearchQuery} changePage={setCurrentPage} />
+        <SearchBox text={searchQuery} onSearch={debouncedHandleSearch} />
         {totalPages > 1 && (
           <Pagination
             currentPage={currentPage}
